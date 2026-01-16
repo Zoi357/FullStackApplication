@@ -1,7 +1,8 @@
 let users = JSON.parse(localStorage.getItem('users')) || [
     { username: "admin", password: "admin123", role: "admin", email: "admin@example.com", emailVerified: true },
-    { username: "user1", password: "123", role: "user", email: "user1@example.com", emailVerified: true },
-    { username: "user2", password: "123", role: "user", email: "user2@example.com", emailVerified: true }
+    { username: "admin1", password: "admin456", role: "admin", email: "admin1@example.com", emailVerified: true },
+    { username: "user1", password: "123user", role: "user", email: "user1@example.com", emailVerified: true },
+    { username: "user2", password: "user123", role: "user", email: "user2@example.com", emailVerified: true }
 ];
 
 let employees = JSON.parse(localStorage.getItem('employees')) || [];
@@ -105,7 +106,7 @@ function logout() {
 
 function toggleDropdown() {
     dropdownMenu.style.display =
-        dropdownMenu.style.display === "block" ? "none" : "block";
+        dropdownMenu.style.display === "block" ? "none" : "block";              
 }
 
 function toggleEmployeeForm(editIndex = null) {
@@ -113,12 +114,14 @@ function toggleEmployeeForm(editIndex = null) {
         const emp = employees[editIndex];
         empId.value = emp.id;
         empName.value = emp.name;
+        empEmail.value = emp.email;
         empPosition.value = emp.position;
         empDept.value = emp.dept;
         employeeForm.dataset.editIndex = editIndex;
     } else {
         empId.value = '';
         empName.value = '';
+        empEmail.value = '';
         empPosition.value = '';
         empDept.value = '';
         delete employeeForm.dataset.editIndex;
@@ -135,6 +138,7 @@ function addOrUpdateEmployee() {
         employees[editIndex] = {
             id: empId.value,
             name: empName.value,
+            email: empEmail.value,
             position: empPosition.value,
             dept: empDept.value
         };
@@ -142,6 +146,7 @@ function addOrUpdateEmployee() {
         employees.push({
             id: empId.value,
             name: empName.value,
+            email: empEmail.value,
             position: empPosition.value,
             dept: empDept.value
         });
@@ -164,8 +169,10 @@ function renderEmployees() {
             <tr>
                 <td>${e.id}</td>
                 <td>${e.name}</td>
+                <td>${e.email}<button onclick="deleteEmail(${index})">Delete</button></td>
                 <td>${e.position}</td>
                 <td>${e.dept}</td>
+
                 <td>
                     <button onclick="toggleEmployeeForm(${index})">Edit</button>
                     <button onclick="deleteEmployee(${index})">Delete</button>
@@ -173,6 +180,12 @@ function renderEmployees() {
             </tr>
         `;
     });
+}
+function deleteEmail(index) {
+    if (!confirm("Are you sure you want to delete email?")) return;
+    employees.splice(index, 1);
+    localStorage.setItem('employees', JSON.stringify(email));
+    renderEmployees();
 }
 
 function deleteEmployee(index) {

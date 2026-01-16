@@ -28,6 +28,8 @@ body {
     display: none;
     position: absolute;
     right: 0;
+        color: black;
+
     background: white;
     min-width: 160px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -59,7 +61,7 @@ input, select {
 }
 
 button {
-    padding: 8px 12px;
+    padding: 8px 12px; 
     cursor: pointer;
 }
 
@@ -70,7 +72,7 @@ button {
 
 .employees-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; 
 }
 
 .employees-table {
