@@ -169,7 +169,7 @@ function renderEmployees() {
             <tr>
                 <td>${e.id}</td>
                 <td>${e.name}</td>
-                <td>${e.email}<button onclick="deleteEmail(${index})">Delete</button></td>
+                <td>${e.email}<button onclick="delete(${index})">Delete</button></td>
                 <td>${e.position}</td>
                 <td>${e.dept}</td>
 
