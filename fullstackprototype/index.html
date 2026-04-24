@@ -13,13 +13,14 @@
 <div class="navbar" id="navbar" style="display:none">
     <div class="logo">Full-Stack App</div>
     <div class="dropdown">
-        <button onclick="toggleDropdown()">Admin ▼</button>
+        <button onclick="toggleDropdown()" id="dropdownBtn">Admin ▼</button>
         <div class="dropdown-content" id="dropdownMenu">
             <a onclick="showHome()">Home</a>
-            <a onclick="showEmployees()">Employees</a>
-            <a onclick="showDepartments()">Departments</a>
+            <a id="employeesLink" onclick="showEmployees()" style="display:none">Employees</a>
+            <a id="departmentsLink" onclick="showDepartments()" style="display:none">Departments</a>
             <a onclick="showMyRequests()">My Requests</a>
             <a onclick="showProfile()">Profile</a>
+            <a id="accountsLink" onclick="showAccounts()" style="display:none">Accounts</a>
             <a onclick="logout()">Logout</a>
         </div>
     </div>
@@ -49,7 +50,7 @@
     <p><a onclick="showLogin()">Back to Login</a></p>
 </div>
 
-<div class="section" id="homeSection">
+<div class="section" id="homeSection" style="display:none">
     <h2>Welcome to Full-Stack App</h2>
     <h3>A static prototype before backend integration. Simulates:</h3>
     <p>- Email registration + fake verification</p>
@@ -60,7 +61,7 @@
     <p><strong>Mission:</strong> Manage users and employees effectively.</p>
 </div>
 
-<div class="section" id="profileSection">
+<div class="section" id="profileSection" style="display:none">
     <div class="profile-box">
         <h3>Profile</h3>
         <p><strong>Email:</strong> <span id="profileEmail"></span></p>
@@ -68,7 +69,27 @@
     </div>
 </div>
 
-<div class="section" id="employeesSection">
+<div class="section" id="accountsSection" style="display:none">
+    <h2>Accounts</h2>
+    <table class="employees-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="accountsTable">
+            <tr>
+                <td colspan="5" style="text-align: center;"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section" id="employeesSection" style="display:none">
     <div class="employees-header">
         <h2>Employees</h2>
         <button onclick="toggleEmployeeForm()">+ Add Employee</button>
@@ -95,13 +116,15 @@
         <input id="empId" placeholder="Employee ID">
         <input id="empName" placeholder="Name">
         <input id="empPosition" placeholder="Position">
-        <input id="empDept" placeholder="Department">
+        <select id="empDept">
+            <option value="">Select Department</option>
+        </select>
         <button onclick="addOrUpdateEmployee()">Save</button>
         <button onclick="toggleEmployeeForm()">Cancel</button>
     </div>
 </div>
 
-<div class="section" id="departmentsSection">
+<div class="section" id="departmentsSection" style="display:none">
     <div class="employees-header">
         <h2>Departments</h2>
         <button onclick="toggleDepartmentForm()">+ Add Department</button>
@@ -131,7 +154,7 @@
     </div>
 </div>
 
-<div class="section" id="myRequestsSection">
+<div class="section" id="myRequestsSection" style="display:none">
     <div class="employees-header">
         <h2>My Requests</h2>
     </div>

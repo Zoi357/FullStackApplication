@@ -4,9 +4,13 @@ let users = JSON.parse(localStorage.getItem('users')) || [
     { username: "user2", password: "user123", role: "user", email: "user2@example.com", emailVerified: true }
 ];
 
+// Save defaults to localStorage on first load so registered users persist
+if (!localStorage.getItem('users')) {
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
 let employees = JSON.parse(localStorage.getItem('employees')) || [];
 let departments = JSON.parse(localStorage.getItem('departments')) || [];
-
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 
 function login() {
@@ -24,6 +28,24 @@ function login() {
     enterPortal();
 }
 
+function getAuthHeader(){
+    const token = sessionStorage.getItem('authToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function loadAdminDashboard(){    
+    const res = await fetch('http://localhost:3000/api/admin/dashboard',{
+        headers: getAuthHeader()
+    });
+    if (res.ok){
+        const data = await res.json();
+        document.getElementById('content').innerText=data.message;
+    }else{
+        document.getElementById('content').innerText='Access denied';
+    }
+}
+
+
 function register() {
     if (!regEmail.value.endsWith("@example.com"))
         return alert("Email must be @example.com");
@@ -39,14 +61,26 @@ function register() {
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
+
     alert("Registered successfully!");
     showLogin();
 }
+
 
 function enterPortal() {
     navbar.style.display = "flex";
     loginSection.style.display = "none";
     registerSection.style.display = "none";
+
+    const label = currentUser.role === "admin" ? "Admin ▼" : currentUser.username + " ▼";
+    document.getElementById("dropdownBtn").textContent = label;
+
+    // Admin-only links
+    const isAdmin = currentUser.role === "admin";
+    document.getElementById("accountsLink").style.display = isAdmin ? "block" : "none";
+    document.getElementById("employeesLink").style.display = isAdmin ? "block" : "none";
+    document.getElementById("departmentsLink").style.display = isAdmin ? "block" : "none";
+
     showHome();
 }
 
@@ -66,6 +100,14 @@ function hideSections() {
     profileSection.style.display = "none";
     departmentsSection.style.display = "none";
     myRequestsSection.style.display = "none";
+    accountsSection.style.display = "none";
+}
+function populateDepartmentDropdown(){
+    empDept.innerHTML = '<option value="">Select Department</option>';
+
+    departments.forEach(dept => {
+        empDept.innerHTML += `<option value="${dept.name}">${dept.name}</option>`;
+    });
 }
 
 function showHome() {
@@ -84,6 +126,16 @@ function showProfile() {
     profileSection.style.display = "block";
     profileEmail.textContent = currentUser.email;
     profileRole.textContent = currentUser.role;
+}
+
+function showAccounts() {
+    if (currentUser.role !== "admin") {
+        alert("Access denied. Admins only.");
+        return;
+    }
+    hideSections();
+    accountsSection.style.display = "block";
+    renderAccounts();   
 }
 
 function showDepartments() {
@@ -108,7 +160,19 @@ function toggleDropdown() {
         dropdownMenu.style.display === "block" ? "none" : "block";
 }
 
+function populateDepartmentDropdown() {
+    empDept.innerHTML = '<option value="">Select Department</option>';
+    if (departments.length === 0) {
+        empDept.innerHTML += '<option disabled>No departments added yet</option>';
+        return;
+    }
+    departments.forEach(dept => {
+        empDept.innerHTML += `<option value="${dept.name}">${dept.name}</option>`;
+    });
+}
+
 function toggleEmployeeForm(editIndex = null) {
+    populateDepartmentDropdown();
     if (editIndex !== null) {
         const emp = employees[editIndex];
         empId.value = emp.id;
@@ -216,6 +280,26 @@ function addOrUpdateDepartment() {
     localStorage.setItem('departments', JSON.stringify(departments));
     renderDepartments();
     toggleDepartmentForm();
+}
+
+function renderAccounts() {
+    if (users.length === 0) {
+        accountsTable.innerHTML =
+            `<tr><td colspan="4" style="text-align:center">No accounts.</td></tr>`;
+        return;
+    }
+
+    accountsTable.innerHTML = "";
+    users.forEach((u, index) => {
+        accountsTable.innerHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${u.username}</td>
+                <td>${u.email}</td>
+                <td>${u.role}</td>
+            </tr>
+        `;
+    });
 }
 
 function renderDepartments() {
